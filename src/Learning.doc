@@ -1,0 +1,242 @@
+React এর প্রতিটি হুকের একটি করে উদাহরণ দেওয়া হলো:
+
+1. useState:
+কাজ: ফাংশনাল কম্পোনেন্টে স্টেট পরিচালনা করে।
+jsx
+Copy code
+import { useState } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+2. useEffect:
+কাজ: সাইড ইফেক্ট পরিচালনা করে (যেমন ডেটা ফেচিং)।
+jsx
+Copy code
+import { useState, useEffect } from 'react';
+
+function Timer() {
+  const [time, setTime] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => setTime(time + 1), 1000);
+
+    return () => clearInterval(interval); // cleanup
+  }, [time]);
+
+  return <div>Time: {time}</div>;
+}
+3. useContext:
+কাজ: Context API এর ডেটা ব্যবহারের জন্য।
+jsx
+Copy code
+import { useContext } from 'react';
+import { ThemeContext } from './ThemeContext';
+
+function ThemedComponent() {
+  const theme = useContext(ThemeContext);
+
+  return <div style={{ background: theme.background }}>Themed Component</div>;
+}
+4. useReducer:
+কাজ: জটিল স্টেট লজিক পরিচালনা করে।
+jsx
+Copy code
+import { useReducer } from 'react';
+
+const initialState = { count: 0 };
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return { count: state.count + 1 };
+    case 'decrement':
+      return { count: state.count - 1 };
+    default:
+      return state;
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  return (
+    <div>
+      <p>Count: {state.count}</p>
+      <button onClick={() => dispatch({ type: 'increment' })}>+</button>
+      <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
+    </div>
+  );
+}
+5. useCallback:
+কাজ: ফাংশন মেমোইজ করে, যাতে সেটি রি-রেন্ডার না হয়।
+jsx
+Copy code
+import { useState, useCallback } from 'react';
+
+function Button({ handleClick }) {
+  return <button onClick={handleClick}>Click Me</button>;
+}
+
+function ParentComponent() {
+  const [count, setCount] = useState(0);
+
+  const increment = useCallback(() => {
+    setCount(c => c + 1);
+  }, []);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <Button handleClick={increment} />
+    </div>
+  );
+}
+6. useMemo:
+কাজ: মান মেমোইজ করে, যাতে এটি বারবার পুনরায় গণনা না হয়।
+jsx
+Copy code
+import { useState, useMemo } from 'react';
+
+function ExpensiveCalculation(num) {
+  console.log("Calculating...");
+  return num * 2;
+}
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  const doubleValue = useMemo(() => ExpensiveCalculation(count), [count]);
+
+  return (
+    <div>
+      <p>Double: {doubleValue}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}
+7. useRef:
+কাজ: DOM এলিমেন্ট বা কোনো মানে রেফারেন্স ধরে রাখতে।
+jsx
+Copy code
+import { useRef } from 'react';
+
+function FocusInput() {
+  const inputRef = useRef(null);
+
+  const focusInput = () => {
+    inputRef.current.focus();
+  };
+
+  return (
+    <div>
+      <input ref={inputRef} type="text" />
+      <button onClick={focusInput}>Focus Input</button>
+    </div>
+  );
+}
+8. useImperativeHandle:
+কাজ: প্যারেন্ট থেকে নির্দিষ্ট মেথড বা প্রপার্টি অ্যাক্সেস করা।
+jsx
+Copy code
+import { useImperativeHandle, forwardRef, useRef } from 'react';
+
+const CustomInput = forwardRef((props, ref) => {
+  const inputRef = useRef();
+
+  useImperativeHandle(ref, () => ({
+    focusInput: () => {
+      inputRef.current.focus();
+    }
+  }));
+
+  return <input ref={inputRef} />;
+});
+
+function Parent() {
+  const ref = useRef();
+
+  return (
+    <div>
+      <CustomInput ref={ref} />
+      <button onClick={() => ref.current.focusInput()}>Focus Input</button>
+    </div>
+  );
+}
+9. useLayoutEffect:
+কাজ: DOM আপডেটের আগে সিঙ্ক্রোনাসভাবে কার্য সম্পাদন করা।
+jsx
+Copy code
+import { useLayoutEffect, useRef } from 'react';
+
+function LayoutEffectComponent() {
+  const divRef = useRef();
+
+  useLayoutEffect(() => {
+    console.log(divRef.current.getBoundingClientRect());
+  }, []);
+
+  return <div ref={divRef}>Hello, world!</div>;
+}
+10. useDebugValue:
+কাজ: ডিবাগ করতে সাহায্য করে।
+jsx
+Copy code
+import { useDebugValue, useState } from 'react';
+
+function useCustomHook(value) {
+  useDebugValue(value > 5 ? "High" : "Low");
+  const [state, setState] = useState(value);
+
+  return state;
+}
+11. useTransition (React 18+):
+কাজ: কম গুরুত্বপূর্ণ কাজকে ডিফার করে।
+jsx
+Copy code
+import { useState, useTransition } from 'react';
+
+function App() {
+  const [isPending, startTransition] = useTransition();
+  const [count, setCount] = useState(0);
+
+  const handleClick = () => {
+    startTransition(() => {
+      setCount(c => c + 1);
+    });
+  };
+
+  return (
+    <div>
+      {isPending ? "Loading..." : count}
+      <button onClick={handleClick}>Increment</button>
+    </div>
+  );
+}
+12. useDeferredValue (React 18+):
+কাজ: কম গুরুত্বপূর্ণ আপডেট ডিফার করে।
+jsx
+Copy code
+import { useState, useDeferredValue } from 'react';
+
+function App() {
+  const [value, setValue] = useState('');
+  const deferredValue = useDeferredValue(value);
+
+  return (
+    <div>
+      <input value={value} onChange={(e) => setValue(e.target.value)} />
+      <p>Deferred Value: {deferredValue}</p>
+    </div>
+  );
+}
+এই উদাহরণগুলো প্রতিটি হুকের মৌলিক ব্যবহার বুঝতে সাহায্য করবে।
